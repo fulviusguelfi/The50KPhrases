@@ -8,9 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +32,16 @@ public class The50KPhrases {
         if (args.length > 0) {
             The50KPhrases the50KPhrases = new The50KPhrases(Paths.get(args[0]));
             the50KPhrases.populateThe50KMoreUsed();
-            System.out.println(the50KPhrases.showThe50KMoreUsed());
+            List<String> list = the50KPhrases.showThe50KMoreUsed();
+            System.out.println(list);
+            System.out.print("List size: ");
+            System.out.println(list.size());
         } else {
+            int lineToCreateFile = 50001;
             Path file = Paths.get("The50KPhrases.TextFile.txt");
 
             if (!Files.exists(file)) {
-                String content = "Hello World !!|";
+                String content = " Hello World! | ";
                 String phrase = "";
                 String line;
 
@@ -59,7 +61,7 @@ public class The50KPhrases {
                 GatheringByteChannel fc;
                 fc = aFile.getChannel();
 
-                for (int j = 0; j < 8000000; j++) {
+                for (int j = 0; j < lineToCreateFile; j++) {
                     line = "<line #" + j + ">/" + phrase + System.getProperty("line.separator");
                     buf.put(line.getBytes());
                     if (j % 100 == 0) {
@@ -79,9 +81,11 @@ public class The50KPhrases {
             }
             The50KPhrases the50KPhrases = new The50KPhrases(file);
             the50KPhrases.populateThe50KMoreUsed();
-            List l =the50KPhrases.showThe50KMoreUsed();
+            List l = the50KPhrases.showThe50KMoreUsed();
+            System.out.println("");
             System.out.print("list size:");
             System.out.println(l.size());
+            System.out.print("File Created");
         }
     }
 
@@ -95,10 +99,11 @@ public class The50KPhrases {
      */
     public void populateThe50KMoreUsed() throws IOException {
         Files.lines(this.file, Charset.defaultCharset())
-                .map((String line) -> line.split("\\|"))
-                .map((String[] a) -> Arrays.asList(a)).limit(50)
+                .map((String line) -> Arrays.asList(line.split("\\|", 50)))
                 .flatMap((List<String> a) -> a.stream())
                 .forEach((String phrase) -> this.the50KMoreUsed.merge(phrase, 1, Integer::sum));
+        System.out.print("Object Complete Size: ");
+        System.out.println(this.the50KMoreUsed.size());
 //        
     }
 
