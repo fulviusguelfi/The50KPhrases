@@ -15,7 +15,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- *
+ * KComplementaryPair was specifically maded for a job test
+ * 
  * @author fulvi
  */
 public class The50KPhrases {
@@ -24,6 +25,14 @@ public class The50KPhrases {
     private final Map<String, Integer> the50KMoreUsed = new LinkedHashMap<>();
 
     /**
+     * file is a large file to read.
+     *
+     * Usage:
+     * Comnadline: java The50KPhrases file
+     * (output goes to console)
+     * Object: (output goes to console)
+     * List l = new The50KPhrases(file).populateThe50KMoreUsed().showThe50KMoreUsed()
+     * 
      * @param args the command line arguments
      * @throws java.io.IOException
      * @throws java.lang.InterruptedException
@@ -79,37 +88,43 @@ public class The50KPhrases {
                 }
                 fc.close();
             }
-            The50KPhrases the50KPhrases = new The50KPhrases(file);
-            the50KPhrases.populateThe50KMoreUsed();
-            List l = the50KPhrases.showThe50KMoreUsed();
+            List l = new The50KPhrases(file).populateThe50KMoreUsed().showThe50KMoreUsed();
             System.out.println("");
             System.out.print("list size:");
             System.out.println(l.size());
             System.out.print("File Created");
         }
     }
-
+/**
+ * Constructor for The50KPhrases
+ * 
+ * @param file 
+ */
     public The50KPhrases(Path file) {
         this.file = file;
     }
 
     /**
-     *
+     * Populate a Map (String, Integer) where key is phrase and value is the number of times
+     * that phrase appears in file
+     * 
      * @throws IOException
      */
-    public void populateThe50KMoreUsed() throws IOException {
+    public The50KPhrases populateThe50KMoreUsed() throws IOException {
         Files.lines(this.file, Charset.defaultCharset())
                 .map((String line) -> Arrays.asList(line.split("\\|", 50)))
                 .flatMap((List<String> a) -> a.stream())
                 .forEach((String phrase) -> this.the50KMoreUsed.merge(phrase, 1, Integer::sum));
         System.out.print("Object Complete Size: ");
         System.out.println(this.the50KMoreUsed.size());
+        return this;
 //        
     }
 
     /**
-     *
-     * @return a List of 50.000 more used
+     * Sort the by value and descending the Map populated (see populateThe50KMoreUsed).
+     * Get the first 50.000 keys in Map and 
+     * @return a List of 50.000 more used phrases
      */
     public List showThe50KMoreUsed() {
         return this.the50KMoreUsed.entrySet().stream()
